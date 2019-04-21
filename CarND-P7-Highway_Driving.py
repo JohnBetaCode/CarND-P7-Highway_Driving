@@ -2,7 +2,7 @@
 # =============================================================================
 """
 Code Information:
-    Date: XX/XX/2019
+    Date: 04/XX/2019
 	Programmer: John A. Betancourt G.
 	Mail: john.betancourt93@gmail.com
     Web: www.linkedin.com/in/jhon-alberto-betancourt-gonzalez-345557129
@@ -48,14 +48,13 @@ def setClipboardData(data):
 def main():
 
     # Copy command to clipboard to Create Video from desktop
-    video_name = "PID_controller_test{}.mp4".format(1)
+    video_name = "path_planing_test_{}.mp4".format(1)
     command = "ffmpeg -video_size {}x{} -framerate {} -f x11grab -i :0.0+100,200 {}".format(
-        1000, 650, 30, os.path.join(os.getcwd(), "video_results", video_name))
+        1200, 850, 30, os.path.join(os.getcwd(), "video_results", video_name))
     setClipboardData(command.encode())
 
     # Run subprocess
     try:
-
         if not os.path.isdir("build"):
             os.mkdir("build")
             os.system('cd build && cmake .. && make') 
@@ -63,8 +62,8 @@ def main():
             os.system('clear && cd build && make') 
 
         processes = (
-            "{}".format(os.path.join(os.getcwd(), "term2_sim_linux", "term2_sim.x86_64")),
-            "termdown {} && {}".format(0, os.path.join(os.getcwd(), "build", "pid"))
+            "{}".format(os.path.join(os.getcwd(), "term3_sim_linux", "term3_sim.x86_64")),
+            "{}".format(os.path.join(os.getcwd(), "build", "path_planning"))
         )
         # Run simulator and socket
         pool = Pool(processes=len(processes))                                                        

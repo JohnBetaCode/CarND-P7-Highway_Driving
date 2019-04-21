@@ -1,76 +1,139 @@
-# CarND-Path-Planning-Project
-Self-Driving Car Engineer Nanodegree Program
-   
-### Simulator.
-You can download the Term3 Simulator which contains the Path Planning Project from the [releases tab (https://github.com/udacity/self-driving-car-sim/releases/tag/T3_v1.2).  
+<!-- 
+***************************************************************************
+https://review.udacity.com/#!/rubrics/1971/view
+2. Localization, Path Planning, Control, and System Integration
+Project Specification
+CarND-P7-Path_Planning
 
-To run the simulator on Mac/Linux, first make the binary file executable with the following command:
-```shell
-sudo chmod u+x {simulator_file_name}
-```
+Compilation
+    1 - The code compiles correctly: Code must compile without errors with cmake and make. Given that we've made CMakeLists.txt as general as possible, it's recommend that you do not change it unless you can guarantee that your changes will still compile on any platform.
 
-### Goals
-In this project your goal is to safely navigate around a virtual highway with other traffic that is driving +-10 MPH of the 50 MPH speed limit. You will be provided the car's localization and sensor fusion data, there is also a sparse map list of waypoints around the highway. The car should try to go as close as possible to the 50 MPH speed limit, which means passing slower traffic when possible, note that other cars will try to change lanes too. The car should avoid hitting other cars at all cost as well as driving inside of the marked road lanes at all times, unless going from one lane to another. The car should be able to make one complete loop around the 6946m highway. Since the car is trying to go 50 MPH, it should take a little over 5 minutes to complete 1 loop. Also the car should not experience total acceleration over 10 m/s^2 and jerk that is greater than 10 m/s^3.
+Valid Trajectories 
+    2 - The car is able to drive at least 4.32 miles without incident: The top right screen of the simulator shows the current/best miles driven without incident. Incidents include exceeding acceleration/jerk/speed, collision, and driving outside of the lanes. Each incident case is also listed below in more detail.
 
-#### The map of the highway is in data/highway_map.txt
-Each waypoint in the list contains  [x,y,s,dx,dy] values. x and y are the waypoint's map coordinate position, the s value is the distance along the road to get to that waypoint in meters, the dx and dy values define the unit normal vector pointing outward of the highway loop.
+    3 - The car drives according to the speed limit: The car doesn't drive faster than the speed limit. Also the car isn't driving much slower than speed limit unless obstructed by traffic.
 
-The highway's waypoints loop around so the frenet s value, distance along the road, goes from 0 to 6945.554.
+    4 - Max Acceleration and Jerk are not Exceeded: The car does not exceed a total acceleration of 10 m/s^2 and a jerk of 10 m/s^3.
 
-## Basic Build Instructions
+    5 - Car does not have collisions: The car must not come into contact with any of the other cars on the road.
 
-1. Clone this repo.
-2. Make a build directory: `mkdir build && cd build`
-3. Compile: `cmake .. && make`
-4. Run it: `./path_planning`.
+    6 - The car stays in its lane, except for the time between changing lanes: The car doesn't spend more than a 3 second length out side the lane lanes during changing lanes, and every other time the car stays inside one of the 3 lanes on the right hand side of the road.
 
-Here is the data provided from the Simulator to the C++ Program
+    7 - The car is able to change lanes: The car is able to smoothly change lanes when it makes sense to do so, such as when behind a slower moving car and an adjacent lane is clear of other traffic.
 
-#### Main car's localization Data (No Noise)
+Reflection
+    8 - There is a reflection on how to generate paths: The code model for generating paths is described in detail. This can be part of the README or a separate doc labeled "Model Documentation".
 
-["x"] The car's x position in map coordinates
-
-["y"] The car's y position in map coordinates
-
-["s"] The car's s position in frenet coordinates
-
-["d"] The car's d position in frenet coordinates
-
-["yaw"] The car's yaw angle in the map
-
-["speed"] The car's speed in MPH
-
-#### Previous path data given to the Planner
-
-//Note: Return the previous list but with processed points removed, can be a nice tool to show how far along
-the path has processed since last time. 
-
-["previous_path_x"] The previous list of x points previously given to the simulator
-
-["previous_path_y"] The previous list of y points previously given to the simulator
-
-#### Previous path's end s and d values 
-
-["end_path_s"] The previous list's last point's frenet s value
-
-["end_path_d"] The previous list's last point's frenet d value
-
-#### Sensor Fusion Data, a list of all other car's attributes on the same side of the road. (No Noise)
-
-["sensor_fusion"] A 2d vector of cars and then that car's [car's unique ID, car's x position in map coordinates, car's y position in map coordinates, car's x velocity in m/s, car's y velocity in m/s, car's s position in frenet coordinates, car's d position in frenet coordinates. 
-
-## Details
-
-1. The car uses a perfect controller and will visit every (x,y) point it recieves in the list every .02 seconds. The units for the (x,y) points are in meters and the spacing of the points determines the speed of the car. The vector going from a point to the next point in the list dictates the angle of the car. Acceleration both in the tangential and normal directions is measured along with the jerk, the rate of change of total Acceleration. The (x,y) point paths that the planner recieves should not have a total acceleration that goes over 10 m/s^2, also the jerk should not go over 50 m/s^3. (NOTE: As this is BETA, these requirements might change. Also currently jerk is over a .02 second interval, it would probably be better to average total acceleration over 1 second and measure jerk from that.
-
-2. There will be some latency between the simulator running and the path planner returning a path, with optimized code usually its not very long maybe just 1-3 time steps. During this delay the simulator will continue using points that it was last given, because of this its a good idea to store the last points you have used so you can have a smooth transition. previous_path_x, and previous_path_y can be helpful for this transition since they show the last points given to the simulator controller with the processed points already removed. You would either return a path that extends this previous path or make sure to create a new path that has a smooth transition with this last path.
-
-## Tips
+***************************************************************************
+Tips
 
 A really helpful resource for doing this project and creating smooth trajectories was using http://kluge.in-chemnitz.de/opensource/spline/, the spline function is in a single hearder file is really easy to use.
 
----
+***************************************************************************
+Video Description
 
+CarND-P7-Path_Planning-1
+CarND-P7-Path_Planning-2
+CarND-P7-Path_Planning-3
+
+In this project, the goal was to design a path planner that is able to create smooth, safe paths for the car to follow along a 3 lane highway with traffic. The path planner was able to keep inside its lane, avoid hitting other cars, and pass slower moving traffic all by using localization, sensor fusion, and map data. The goal is to safely navigate around a virtual highway with other traffic that is driving +-10 MPH of the 50 MPH speed limit. The car's localization and sensor fusion data are provided, there is also a sparse map list of waypoints around the highway. The car should try to go as close as possible to the 50 MPH speed limit, which means passing slower traffic when possible, note that other cars will try to change lanes too. The car should avoid hitting other cars at all cost as well as driving inside of the marked road lanes at all times, unless going from one lane to another. The car should be able to make one complete loop around the 6946m highway. Since the car is trying to go 50 MPH, it should take a little over 5 minutes to complete 1 loop. Also the car should not experience total acceleration over 10 m/s^2 and jerk that is greater than 10 m/s^3.
+
+Repository:
+https://github.com/JohnBetaCode/CarND-P7-Highway_Driving
+
+Keywords:
+C++, AI, Udacity, Self Driving Car, Sensor Fusion, Highway Driving, Trayectory Generation, Behavior Planning, Prediction, Search, Motion PLanning
+
+***************************************************************************
+-->
+# CarND-P7-Path-Planning-Project
+Self-Driving Car Engineer Nanodegree Program  
+[![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)  
+
+<img src="writeup_files/banner.png" alt="drawing" width="800"/> 
+
+## Overview
+
+In this project, the goal was to design a path planner that is able to create smooth, safe paths for the car to follow along a 3 lane highway with traffic. The path planner was able to keep inside its lane, avoid hitting other cars, and pass slower moving traffic all by using localization, sensor fusion, and map data.
+
+## Goals
+
+In this project the goal is to safely navigate around a virtual highway with other traffic that is driving +-10 MPH of the 50 MPH speed limit. The car's localization and sensor fusion data are provided, there is also a sparse map list of waypoints around the highway. The car should try to go as close as possible to the 50 MPH speed limit, which means passing slower traffic when possible, note that other cars will try to change lanes too. The car should avoid hitting other cars at all cost as well as driving inside of the marked road lanes at all times, unless going from one lane to another. The car should be able to make one complete loop around the 6946m highway. Since the car is trying to go 50 MPH, it should take a little over 5 minutes to complete 1 loop. Also the car should not experience total acceleration over 10 m/s^2 and jerk that is greater than 10 m/s^3.
+
+---
+## Results (Rubric)
+
+#### Compilation:
+
+1. The code compiles correctly: Code must compile without errors with cmake and make. Given that we've made CMakeLists.txt as general as possible, it's recommend that you do not change it unless you can guarantee that your changes will still compile on any platform.
+
+<img src="https://cdn.dribbble.com/users/2374064/screenshots/4732016/car-jump.gif
+" alt="drawing" width="300"/> 
+
+#### Valid Trajectories:
+
+2. The car is able to drive at least 4.32 miles without incident: The top right screen of the simulator shows the current/best miles driven without incident. Incidents include exceeding acceleration/jerk/speed, collision, and driving outside of the lanes. Each incident case is also listed below in more detail.
+
+<img src="https://cdn.dribbble.com/users/2374064/screenshots/4732016/car-jump.gif
+" alt="drawing" width="300"/> 
+
+3. The car drives according to the speed limit: The car doesn't drive faster than the speed limit. Also the car isn't driving much slower than speed limit unless obstructed by traffic.
+
+<img src="https://cdn.dribbble.com/users/2374064/screenshots/4732016/car-jump.gif
+" alt="drawing" width="300"/> 
+
+4. Max Acceleration and Jerk are not Exceeded: The car does not exceed a total acceleration of 10 m/s^2 and a jerk of 10 m/s^3.
+
+<img src="https://cdn.dribbble.com/users/2374064/screenshots/4732016/car-jump.gif
+" alt="drawing" width="300"/> 
+
+5. Car does not have collisions: The car must not come into contact with any of the other cars on the road.
+
+<img src="https://cdn.dribbble.com/users/2374064/screenshots/4732016/car-jump.gif
+" alt="drawing" width="300"/> 
+
+6. The car stays in its lane, except for the time between changing lanes: The car doesn't spend more than a 3 second length out side the lane lanes during changing lanes, and every other time the car stays inside one of the 3 lanes on the right hand side of the road.
+
+<img src="https://cdn.dribbble.com/users/2374064/screenshots/4732016/car-jump.gif
+" alt="drawing" width="300"/> 
+
+7. The car is able to change lanes: The car is able to smoothly change lanes when it makes sense to do so, such as when behind a slower moving car and an adjacent lane is clear of other traffic.
+
+<img src="https://cdn.dribbble.com/users/2374064/screenshots/4732016/car-jump.gif
+" alt="drawing" width="300"/> 
+
+#### Reflection: 
+
+8. There is a reflection on how to generate paths: The code model for generating paths is described in detail. This can be part of the README or a separate doc labeled "Model Documentation".
+
+<img src="https://cdn.dribbble.com/users/2374064/screenshots/4732016/car-jump.gif
+" alt="drawing" width="300"/> 
+
+## Video Results:
+
+(CarND-P7-Path_Planning-1.mp4)[PUT LINK HERE]  
+(CarND-P7-Path_Planning-1)[PUT LINK HERE]  
+
+(CarND-P7-Path_Planning-2.mp4)[PUT LINK HERE]  
+(CarND-P7-Path_Planning-2)[PUT LINK HERE]  
+
+(CarND-P7-Path_Planning-3.mp4)[PUT LINK HERE]  
+(CarND-P7-Path_Planning-3)[PUT LINK HERE]  
+
+---
+## Basic Build Instructions
+
+1. [Clone this repo](https://github.com/JohnBetaCode/CarND-P7-Highway_Driving).
+2. Make a build directory: `mkdir build && cd build`
+3. Compile: `cmake .. && make`
+4. Run it: `./path_planning`.
+5. After this you just can run the script to build and run all: 
+    ```
+    clear && python3 CarND-P5-Extended_Kalman_Filters.py
+    ```
+Yes, I know, making a build with a python script is horrible, I'm a bad person but too lazy as well to write the make line every time that I changed and had to test something in my code, don't judge me. This script also run everything for you. If you want to plot the path planing's response just wait until the car finish its path, in this way the c++ code close the csv file to plot the results later with matplotlib in the python code. 
+
+---
 ## Dependencies
 
 * cmake >= 3.5
@@ -92,54 +155,64 @@ A really helpful resource for doing this project and creating smooth trajectorie
     git checkout e94b6e1
     ```
 
-## Editor Settings
+---
+## The Highway's map
 
-We've purposefully kept editor configuration files out of this repo in order to
-keep it as simple and environment agnostic as possible. However, we recommend
-using the following settings:
+The map of the highway is in [data/highway_map.txt](https://github.com/JohnBetaCode/CarND-P7-Highway_Driving/blob/master/data/highway_map.csv). Each waypoint in the list contains  `[x,y,s,dx,dy]` values. `x` and `y` are the waypoint's map coordinate position, the `s` value is the distance along the road to get to that waypoint in meters, the `dx` and `dy` values define the unit normal vector pointing outward of the highway loop. The highway's waypoints loop around so the frenet `s` value, distance along the road, goes from 0 to 6945.554.
 
-* indent using spaces
-* set tab width to 2 spaces (keeps the matrices in source code aligned)
+---
+## Simulator.
 
-## Code Style
+You can download the Term3 Simulator which contains the Path Planning project here: 
 
-Please (do your best to) stick to [Google's C++ style guide](https://google.github.io/styleguide/cppguide.html).
+https://github.com/udacity/self-driving-car-sim/releases/tag/T3_v1.2
 
-## Project Instructions and Rubric
+To run the simulator on Mac/Linux, first make the binary file executable with the following command:
+```shell
+sudo chmod u+x {simulator_file_name}
+```
 
-Note: regardless of the changes you make, your project must be buildable using
-cmake and make!
+Here is the data provided from the Simulator to the C++ Program
 
+#### Main car's localization Data (No Noise):
 
-## Call for IDE Profiles Pull Requests
+    ["x"] The car's x position in map coordinates
+    ["y"] The car's y position in map coordinates
+    ["s"] The car's s position in frenet coordinates
+    ["d"] The car's d position in frenet coordinates
+    ["yaw"] The car's yaw angle in the map
+    ["speed"] The car's speed in MPH
 
-Help your fellow students!
+#### Previous path data given to the Planner:
 
-We decided to create Makefiles with cmake to keep this project as platform
-agnostic as possible. Similarly, we omitted IDE profiles in order to ensure
-that students don't feel pressured to use one IDE or another.
+**Note**: Return the previous list but with processed points removed, can be a nice tool to show how far along
+the path has processed since last time. 
 
-However! I'd love to help people get up and running with their IDEs of choice.
-If you've created a profile for an IDE that you think other students would
-appreciate, we'd love to have you add the requisite profile files and
-instructions to ide_profiles/. For example if you wanted to add a VS Code
-profile, you'd add:
+    ["previous_path_x"] The previous list of x points previously given to the simulator
+    ["previous_path_y"] The previous list of y points previously given to the simulator
 
-* /ide_profiles/vscode/.vscode
-* /ide_profiles/vscode/README.md
+#### Previous path's end s and d values:
 
-The README should explain what the profile does, how to take advantage of it,
-and how to install it.
+    ["end_path_s"] The previous list's last point's frenet s value
+    ["end_path_d"] The previous list's last point's frenet d value
 
-Frankly, I've never been involved in a project with multiple IDE profiles
-before. I believe the best way to handle this would be to keep them out of the
-repo root to avoid clutter. My expectation is that most profiles will include
-instructions to copy files to a new location to get picked up by the IDE, but
-that's just a guess.
+#### Sensor Fusion Data, a list of all other car's attributes on the same side of the road. (No Noise):
 
-One last note here: regardless of the IDE used, every submitted project must
-still be compilable with cmake and make./
+    ["sensor_fusion"] A 2d vector of cars and then that car's [car's unique ID, car's x position in map coordinates, car's y position in map coordinates, car's x velocity in m/s, car's y velocity in m/s, car's s position in frenet coordinates, car's d position in frenet coordinates. 
 
-## How to write a README
-A well written README file can enhance your project and portfolio.  Develop your abilities to create professional README files by completing [this free course](https://www.udacity.com/course/writing-readmes--ud777).
+---
+## Details
 
+1. The car uses a perfect controller and will visit every (x,y) point it recieves in the list every .02 seconds. The units for the (x,y) points are in meters and the spacing of the points determines the speed of the car. The vector going from a point to the next point in the list dictates the angle of the car. Acceleration both in the tangential and normal directions is measured along with the jerk, the rate of change of total Acceleration. The (x,y) point paths that the planner recieves should not have a total acceleration that goes over 10 m/s^2, also the jerk should not go over 50 m/s^3. (NOTE: As this is BETA, these requirements might change. Also currently jerk is over a .02 second interval, it would probably be better to average total acceleration over 1 second and measure jerk from that.
+
+2. There will be some latency between the simulator running and the path planner returning a path, with optimized code usually its not very long maybe just 1-3 time steps. During this delay the simulator will continue using points that it was last given, because of this its a good idea to store the last points you have used so you can have a smooth transition. previous_path_x, and previous_path_y can be helpful for this transition since they show the last points given to the simulator controller with the processed points already removed. You would either return a path that extends this previous path or make sure to create a new path that has a smooth transition with this last path.
+
+---
+> **Date:** &nbsp; 04/XX/2019  
+> **Programmer:** &nbsp;John A. Betancourt G.   
+> **Mail:** &nbsp;john.betancourt93@gmail.com  
+> **Web:** &nbsp; www.linkedin.com/in/jhon-alberto-betancourt-gonzalez-345557129 
+
+<img src="https://autofans.joj.sk/data/art/1185/imagejpg.gif" alt="drawing" width="500"/> 
+
+<!-- Sorry for my English -->
