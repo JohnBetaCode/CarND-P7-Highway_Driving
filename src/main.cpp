@@ -165,9 +165,6 @@ int main() {
             // std::cout<<"|car_id:"<<obj_id<<"\t| x:"<<obj_x<<"\t| y:"<<obj_y<<"\t| vx:" 
             //   <<obj_vx<<"\t| vy:"<< obj_vy<<"\t| s:"<<obj_s<<"\t| d:"<<obj_d<<"\t|"<< std::endl;
 
-            // Print turning information
-            std::cout<<"Left Turn: "<<!close_obj_l<<"| Right Turn: "<<!close_obj_r<< std::endl;
-
             // If using previous points can project s value out
             // See where the car is going to be in the future
             double check_speed = sqrt(obj_vx*obj_vx+obj_vy*obj_vy);
@@ -185,19 +182,29 @@ int main() {
                     close_obj_ref_vel = check_speed*2.24; // 2.24 because mph
                 }
               }
-              else if(obj_d < (LANE_WIDTH*.5+LANE_WIDTH*(lane+1)+LANE_WIDTH*.5) 
-              && obj_d > (LANE_WIDTH*.5+LANE_WIDTH*(lane+1)-LANE_WIDTH*.5)
-              && lane!=2){
-                close_obj_r = true;
-              }
-              else if(obj_d < (LANE_WIDTH*.5+LANE_WIDTH*(lane-1)+LANE_WIDTH*.5) 
-              && obj_d > (LANE_WIDTH*.5+LANE_WIDTH*(lane-1)-LANE_WIDTH*.5)
-              && lane!=0){
-                close_obj_l = true;
+            
+            // Check for obstacles in the left and the right lanes
+            if(abs(obj_s-car_s)<SPACE_GAP){
+
+                // Check obstacles to the right
+                if(obj_d < (LANE_WIDTH*.5+LANE_WIDTH*(lane+1)+LANE_WIDTH*.5) 
+                && obj_d > (LANE_WIDTH*.5+LANE_WIDTH*(lane+1)-LANE_WIDTH*.5)
+                && lane!=2){
+                  close_obj_r = true;
+                }
+                // Check obstacles to the left
+                else if(obj_d < (LANE_WIDTH*.5+LANE_WIDTH*(lane-1)+LANE_WIDTH*.5) 
+                && obj_d > (LANE_WIDTH*.5+LANE_WIDTH*(lane-1)-LANE_WIDTH*.5)
+                && lane!=0){
+                  close_obj_l = true;
+                }
               }
               
             }             
           }
+
+          // Print turning information
+          std::cout<<car_d<<"Left Turn: "<<!close_obj_l<<"| Right Turn: "<<!close_obj_r<< std::endl;
 
           // ----------------------------------------------------------------
           // Acceleration/Deceleration heuristic
@@ -223,10 +230,13 @@ int main() {
               }
             }
 
-            //  Change lane heuristic
-            // if(!close_obj_l){
-            //   lane = 0;
-            // }
+            // Change lane heuristic
+            if(!close_obj_l){
+              lane -= 1;
+            }
+            else if(!close_obj_r){
+              lane += 1;
+            }
 
           }
           // If there's an obstacle ahead

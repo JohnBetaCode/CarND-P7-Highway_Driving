@@ -141,7 +141,9 @@ For safety, a lane change path should optimize the distance away from other traf
 
 #### Reflection: 
 
-8. There is a reflection on how to generate paths: The code model for generating paths is described in detail. This can be part of the README or a separate doc labeled "Model Documentation".
+My path planner is built on top of the starter project by udacity. On lines 63 to 69 I did incorporate some constants to easily tweak those parameters. Code is prepared in such way it is easy to redefine number of highway lanes and still run path planner successfully. From lines 75 to 103 I am reading in sensor fusion data from json files if any are returned by SocketIO from the simulator. Lines 112 to 150 are responsible of detecting the behavior of other cars, determine their speed and lateral and longitudinal position on the road. Based on accumulated data planner decides of the safety in performing following moves: going ahead, turning left or right. On lines 153 to 172 planner makes a decision of the next move, based on the previously evaluated safe moves. Possible moves are turning left, right or keeping the speed of the car ahead. On lines 173 to 270 is the part of the code responsible for trajectory generation. The trajectory evaluation takes into account cars coordinates, its speed and lane occupation and previous path points. Previous path points provide trajectory continuity, also increasing trajectory generation efficiency and accuracy. It is no longer needed to reevaluate trajectory from scratch at every iteration. Also to make trajectory evaluation efficient coordinates are transformed to local car coordinates.
+
+I must say the final code is a bit hard to maintain. I suppose it would be better to transform the code to more OOP paradigm. In further work I will also try to introduce cost functions and some machine learning algorithm to make the cars behavior more realistic.
 
 <img src="https://cdn.dribbble.com/users/2374064/screenshots/4732016/car-jump.gif
 " alt="drawing" width="300"/> 
@@ -199,7 +201,7 @@ Yes, I know, making a build with a python script is horrible, I'm a bad person b
   * Windows: recommend using [MinGW](http://www.mingw.org/)
 * [uWebSockets](https://github.com/uWebSockets/uWebSockets)
   * Run either `install-mac.sh` or `install-ubuntu.sh`.
-  * If you install from source, checkout to commit `e94b6e1`, i.e.
+  * If you install from My path planner is built on top of the starter project by udacity. On lines 63 to 69 I did incorporate some constants to easily tweak those parameters. Code is prepared in such way it is easy to redefine number of highway lanes and still run path planner successfully. From lines 75 to 103 I am reading in sensor fusion data from json files if any are returned by SocketIO from the simulator. Lines 112 to 150 are responsible of detecting the behavior of other cars, determine their speed and lateral and longitudinal position on the road. Based on accumulated data planner decides of the safety in performing following moves: going ahead, turning left or right. On lines 153 to 172 planner makes a decision of the next move, based on the previously evaluated safe moves. Possible moves are turning left, right or keeping the speed of the car ahead. On lines 173 to 270 is the part of the code responsible for trajectory generation. The trajectory evaluation takes into account cars coordinates, its speed and lane occupation and previous path points. Previous path points provide trajectory continuity, also increasing trajectory generation efficiency and accuracy. It is no longer needed to reevaluate trajectory from scratch at every iteration. Also to make trajectory evaluation efficient coordinates are transformed to local car coordinates.source, checkout to commit `e94b6e1`, i.e.
     ```
     git clone https://github.com/uWebSockets/uWebSockets 
     cd uWebSockets
