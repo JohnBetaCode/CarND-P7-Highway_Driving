@@ -105,4 +105,5 @@ venv.bak/
 term2_sim_linux/
 build/
 term3_sim_linux/
-
+resources/
+.vscode/

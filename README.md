@@ -25,27 +25,8 @@ Reflection
     8 - There is a reflection on how to generate paths: The code model for generating paths is described in detail. This can be part of the README or a separate doc labeled "Model Documentation".
 
 ***************************************************************************
-Tips
-
-A really helpful resource for doing this project and creating smooth trajectories was using http://kluge.in-chemnitz.de/opensource/spline/, the spline function is in a single hearder file is really easy to use.
-
-***************************************************************************
-Video Description
-
-CarND-P7-Path_Planning-1
-CarND-P7-Path_Planning-2
-CarND-P7-Path_Planning-3
-
-In this project, the goal was to design a path planner that is able to create smooth, safe paths for the car to follow along a 3 lane highway with traffic. The path planner was able to keep inside its lane, avoid hitting other cars, and pass slower moving traffic all by using localization, sensor fusion, and map data. The goal is to safely navigate around a virtual highway with other traffic that is driving +-10 MPH of the 50 MPH speed limit. The car's localization and sensor fusion data are provided, there is also a sparse map list of waypoints around the highway. The car should try to go as close as possible to the 50 MPH speed limit, which means passing slower traffic when possible, note that other cars will try to change lanes too. The car should avoid hitting other cars at all cost as well as driving inside of the marked road lanes at all times, unless going from one lane to another. The car should be able to make one complete loop around the 6946m highway. Since the car is trying to go 50 MPH, it should take a little over 5 minutes to complete 1 loop. Also the car should not experience total acceleration over 10 m/s^2 and jerk that is greater than 10 m/s^3.
-
-Repository:
-https://github.com/JohnBetaCode/CarND-P7-Highway_Driving
-
-Keywords:
-C++, AI, Udacity, Self Driving Car, Sensor Fusion, Highway Driving, Trayectory Generation, Behavior Planning, Prediction, Search, Motion PLanning
-
-***************************************************************************
 -->
+
 # CarND-P7-Path-Planning-Project
 Self-Driving Car Engineer Nanodegree Program  
 [![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)  
@@ -54,11 +35,67 @@ Self-Driving Car Engineer Nanodegree Program
 
 ## Overview
 
-In this project, the goal was to design a path planner that is able to create smooth, safe paths for the car to follow along a 3 lane highway with traffic. The path planner was able to keep inside its lane, avoid hitting other cars, and pass slower moving traffic all by using localization, sensor fusion, and map data.
+In this project, the goal was to design a path planner that is able to create smooth, safe paths for the car to follow along a 3 lane highway with traffic. The path planner was able to keep inside its lane, avoid hitting other cars, and pass slower moving traffic all by using localization, sensor fusion, and map data. The car transmits its location, along with its sensor fusion data, which estimates the location of all the vehicles on the same side of the road.
 
 ## Goals
 
 In this project the goal is to safely navigate around a virtual highway with other traffic that is driving +-10 MPH of the 50 MPH speed limit. The car's localization and sensor fusion data are provided, there is also a sparse map list of waypoints around the highway. The car should try to go as close as possible to the 50 MPH speed limit, which means passing slower traffic when possible, note that other cars will try to change lanes too. The car should avoid hitting other cars at all cost as well as driving inside of the marked road lanes at all times, unless going from one lane to another. The car should be able to make one complete loop around the 6946m highway. Since the car is trying to go 50 MPH, it should take a little over 5 minutes to complete 1 loop. Also the car should not experience total acceleration over 10 m/s^2 and jerk that is greater than 10 m/s^3.
+
+---
+## Description
+
+
+### **Timing**
+
+The simulator runs a cycle every 20 ms (50 frames per second), but the C++ path planning program will provide a new path at least one 20 ms cycle behind. The simulator will simply keep progressing down its last given path while it waits for a new generated path.
+
+This means that using previous path data becomes even more important when higher latency is involved. Imagine, for instance, that there is a 500ms delay in sending a new path to the simulator. As long as the new path incorporates a sufficient length of the previous path, the transition will still be smooth.
+
+<img src="writeup_files/car-ppc-gif.gif" alt="drawing" width="400"/> 
+
+A concern, though, is how accurately we can predict other traffic 1-2 seconds into the future. An advantage of newly generated paths is that they take into account the most up-to-date state of other traffic.
+
+### **Setting Point Paths with Latency**
+
+The C++ path planner will at the very least be one cycle behind the simulator because the C++ program can't receive and send data on the same cycle. As a result, any path that the simulator receives will be from the perspective of a previous cycle. This might mean that by the time a new path reaches the simulator, the vehicle has already passed the first few waypoints on that path. For this the simulator has built-in tools to deal with this timing difference. The simulator actually expects the received path to be a little out of date compared to where the car is, and the simulator will consider which point on the received path is closest to the car and adjust appropriately. 
+
+### **Highway Map**
+
+Inside [`data/highway_map.csv`](https://github.com/JohnBetaCode/CarND-P7-Highway_Driving/blob/master/data/highway_map.csv) there is a list of waypoints that go all the way around the track. The track contains a total of 181 waypoints, with the last waypoint mapping back around to the first. The waypoints are in the middle of the double-yellow dividing line in the center of the highway.
+
+The track is 6945.554 meters around (about 4.32 miles). If the car averages near 50 MPH, then it should take a little more than 5 minutes for it to go all the way around the highway.
+
+The highway has 6 lanes total - 3 heading in each direction. Each lane is 4 m wide and the car should only ever be in one of the 3 lanes on the right-hand side. The car should always be inside a lane unless doing a lane change.
+
+### **Waypoint Data**
+
+Each waypoint has an (x,y) global map position, and a Frenet s value and Frenet d unit normal vector (split up into the x component, and the y component).
+
+The s value is the distance along the direction of the road. The first waypoint has an s value of 0 because it is the starting point.
+
+The d vector has a magnitude of 1 and points perpendicular to the road in the direction of the right-hand side of the road. The d vector can be used to calculate lane positions. For example, if we want to be in the left lane at some waypoint just add the waypoint's (x,y) coordinates with the d vector multiplied by 2. Since the lane is 4 m wide, the middle of the left lane (the lane closest to the double-yellow dividing line) is 2 m from the waypoint.
+
+If we would like to be in the middle lane, add the waypoint's coordinates to the d vector multiplied by 6 = (2+4), since the center of the middle lane is 4 m from the center of the left lane, which is itself 2 m from the double-yellow dividing line and the waypoints.
+
+The helper function, getXY takes in Frenet (s,d) coordinates and transforms them to (x,y) coordinates.
+
+### **Changing Lanes**
+
+It's important that the car doesn't crash into any of the other vehicles on the road, all of which are moving at different speeds around the speed limit and can change lanes.
+
+The sensor_fusion variable contains all the information about the cars on the right-hand side of the road.
+
+The data format for each car is: [id, x, y, vx, vy, s, d]. The id is a unique identifier for that car. The x, y values are in global map coordinates, and the vx, vy values are the velocity components, also in reference to the global map. Finally s and d are the Frenet coordinates for that car.
+
+The vx, vy values can be useful for predicting where the cars will be in the future. For instance, if we were to assume that the tracked car kept moving along the road, then its future predicted Frenet s value will be its current s value plus its (transformed) total velocity (m/s) multiplied by the time elapsed into the future (s).
+
+The last consideration was how to create paths that can smoothly changes lanes. Any time the ego vehicle approaches a car in front of it that is moving slower than the speed limit, the ego vehicle should consider changing lanes.
+
+The car should only change lanes if such a change would be safe, and also if the lane change would help it move through the flow of traffic better.
+
+For safety, a lane change path should optimize the distance away from other traffic. For comfort, a lane change path should also result in low acceleration and jerk. The acceleration and jerk part was solved from linear equations for s and d functions. 
+
+<img src="writeup_files/playfuldesertedblackrussianterrier-size-restricted.gif" alt="drawing" width="400"/> 
 
 ---
 ## Results (Rubric)
@@ -119,6 +156,20 @@ In this project the goal is to safely navigate around a virtual highway with oth
 
 (CarND-P7-Path_Planning-3.mp4)[PUT LINK HERE]  
 (CarND-P7-Path_Planning-3)[PUT LINK HERE]  
+
+<!-- Videos Description
+
+CarND-P7-Path_Planning-1
+CarND-P7-Path_Planning-2
+CarND-P7-Path_Planning-3
+
+In this project, the goal was to design a path planner that is able to create smooth, safe paths for the car to follow along a 3 lane highway with traffic. The path planner was able to keep inside its lane, avoid hitting other cars, and pass slower moving traffic all by using localization, sensor fusion, and map data. The goal is to safely navigate around a virtual highway with other traffic that is driving +-10 MPH of the 50 MPH speed limit. The car's localization and sensor fusion data are provided, there is also a sparse map list of waypoints around the highway. The car should try to go as close as possible to the 50 MPH speed limit, which means passing slower traffic when possible, note that other cars will try to change lanes too. The car should avoid hitting other cars at all cost as well as driving inside of the marked road lanes at all times, unless going from one lane to another. The car should be able to make one complete loop around the 6946m highway. Since the car is trying to go 50 MPH, it should take a little over 5 minutes to complete 1 loop. Also the car should not experience total acceleration over 10 m/s^2 and jerk that is greater than 10 m/s^3.
+
+Repository:
+https://github.com/JohnBetaCode/CarND-P7-Highway_Driving
+
+Keywords:
+C++, AI, Udacity, Self Driving Car, Sensor Fusion, Highway Driving, Trayectory Generation, Behavior Planning, Prediction, Search, Motion PLanning -->
 
 ---
 ## Basic Build Instructions
@@ -208,7 +259,7 @@ the path has processed since last time.
 2. There will be some latency between the simulator running and the path planner returning a path, with optimized code usually its not very long maybe just 1-3 time steps. During this delay the simulator will continue using points that it was last given, because of this its a good idea to store the last points you have used so you can have a smooth transition. previous_path_x, and previous_path_y can be helpful for this transition since they show the last points given to the simulator controller with the processed points already removed. You would either return a path that extends this previous path or make sure to create a new path that has a smooth transition with this last path.
 
 ---
-> **Date:** &nbsp; 04/XX/2019  
+> **Date:** &nbsp; 05/XX/2019  
 > **Programmer:** &nbsp;John A. Betancourt G.   
 > **Mail:** &nbsp;john.betancourt93@gmail.com  
 > **Web:** &nbsp; www.linkedin.com/in/jhon-alberto-betancourt-gonzalez-345557129 
