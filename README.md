@@ -69,15 +69,15 @@ The highway has 6 lanes total - 3 heading in each direction. Each lane is 4 m wi
 
 ### **Waypoint Data**
 
-Each waypoint has an (x,y) global map position, and a Frenet s value and Frenet d unit normal vector (split up into the x component, and the y component).
+Each waypoint has an (`x`,`y`) global map position, and a Frenet `s` value and Frenet `d` unit normal vector (split up into the `x` component, and the `y` component).
 
-The s value is the distance along the direction of the road. The first waypoint has an s value of 0 because it is the starting point.
+The `s` value is the distance along the direction of the road. The first waypoint has an `s` value of 0 because it is the starting point.
 
-The d vector has a magnitude of 1 and points perpendicular to the road in the direction of the right-hand side of the road. The d vector can be used to calculate lane positions. For example, if we want to be in the left lane at some waypoint just add the waypoint's (x,y) coordinates with the d vector multiplied by 2. Since the lane is 4 m wide, the middle of the left lane (the lane closest to the double-yellow dividing line) is 2 m from the waypoint.
+The `d` vector has a magnitude of 1 and points perpendicular to the road in the direction of the right-hand side of the road. The `d` vector can be used to calculate lane positions. For example, if we want to be in the left lane at some waypoint just add the waypoint's (`x`,`y`) coordinates with the `d` vector multiplied by 2. Since the lane is 4 m wide, the middle of the left lane (the lane closest to the double-yellow dividing line) is 2 m from the waypoint.
 
-If we would like to be in the middle lane, add the waypoint's coordinates to the d vector multiplied by 6 = (2+4), since the center of the middle lane is 4 m from the center of the left lane, which is itself 2 m from the double-yellow dividing line and the waypoints.
+If we would like to be in the middle lane, add the waypoint's coordinates to the `d` vector multiplied by 6 = (2+4), since the center of the middle lane is 4 m from the center of the left lane, which is itself 2 m from the double-yellow dividing line and the waypoints.
 
-The helper function, getXY takes in Frenet (s,d) coordinates and transforms them to (x,y) coordinates.
+The helper function, getXY takes in Frenet (`s`,`d`) coordinates and transforms them to (`x`,`y`) coordinates.
 
 ### **Changing Lanes**
 
@@ -85,9 +85,9 @@ It's important that the car doesn't crash into any of the other vehicles on the 
 
 The sensor_fusion variable contains all the information about the cars on the right-hand side of the road.
 
-The data format for each car is: [id, x, y, vx, vy, s, d]. The id is a unique identifier for that car. The x, y values are in global map coordinates, and the vx, vy values are the velocity components, also in reference to the global map. Finally s and d are the Frenet coordinates for that car.
+The data format for each car is: [`id`, `x`, `y`, `vx`, `vy`, `s`, `d`]. The id is a unique identifier for that car. The `x`, `y` values are in global map coordinates, and the `vx`, `vy` values are the velocity components, also in reference to the global map. Finally `s` and `d` are the Frenet coordinates for that car.
 
-The vx, vy values can be useful for predicting where the cars will be in the future. For instance, if we were to assume that the tracked car kept moving along the road, then its future predicted Frenet s value will be its current s value plus its (transformed) total velocity (m/s) multiplied by the time elapsed into the future (s).
+The `vx`, `vy` values can be useful for predicting where the cars will be in the future. For instance, if we were to assume that the tracked car kept moving along the road, then its future predicted Frenet `s` value will be its current `s` value plus its (transformed) total velocity (m/s) multiplied by the time elapsed into the future (s).
 
 The last consideration was how to create paths that can smoothly changes lanes. Any time the ego vehicle approaches a car in front of it that is moving slower than the speed limit, the ego vehicle should consider changing lanes.
 
@@ -102,51 +102,44 @@ For safety, a lane change path should optimize the distance away from other traf
 
 #### Compilation:
 
-1. The code compiles correctly: Code must compile without errors with cmake and make. Given that we've made CMakeLists.txt as general as possible, it's recommend that you do not change it unless you can guarantee that your changes will still compile on any platform.
-
-<img src="https://cdn.dribbble.com/users/2374064/screenshots/4732016/car-jump.gif
-" alt="drawing" width="300"/> 
+1. The code compiles correctly: Code compiles without any errors with cmake and make. Given that we've made CMakeLists.txt as general as possible, it's recommend that you do not change it unless you can guarantee that your changes will still compile on any platform.
 
 #### Valid Trajectories:
 
-2. The car is able to drive at least 4.32 miles without incident: The top right screen of the simulator shows the current/best miles driven without incident. Incidents include exceeding acceleration/jerk/speed, collision, and driving outside of the lanes. Each incident case is also listed below in more detail.
+2. The car is able to drive at least 4.32 miles without incident: The top right screen of the simulator shows the current/best miles driven without incident. Incidents include exceeding acceleration/jerk/speed, collision, and driving outside of the lanes.
 
-<img src="https://cdn.dribbble.com/users/2374064/screenshots/4732016/car-jump.gif
-" alt="drawing" width="300"/> 
+<img src="writeup_files/higway_7.gif" alt="drawing" width="300"/> 
 
 3. The car drives according to the speed limit: The car doesn't drive faster than the speed limit. Also the car isn't driving much slower than speed limit unless obstructed by traffic.
-
-<img src="https://cdn.dribbble.com/users/2374064/screenshots/4732016/car-jump.gif
-" alt="drawing" width="300"/> 
-
+ 
 4. Max Acceleration and Jerk are not Exceeded: The car does not exceed a total acceleration of 10 m/s^2 and a jerk of 10 m/s^3.
 
-<img src="https://cdn.dribbble.com/users/2374064/screenshots/4732016/car-jump.gif
-" alt="drawing" width="300"/> 
+<img src="writeup_files/higway_1.gif" alt="drawing" width="300"/> 
 
 5. Car does not have collisions: The car must not come into contact with any of the other cars on the road.
 
-<img src="https://cdn.dribbble.com/users/2374064/screenshots/4732016/car-jump.gif
-" alt="drawing" width="300"/> 
+<img src="writeup_files/higway_8.gif" alt="drawing" width="300"/> 
 
-6. The car stays in its lane, except for the time between changing lanes: The car doesn't spend more than a 3 second length out side the lane lanes during changing lanes, and every other time the car stays inside one of the 3 lanes on the right hand side of the road.
+6. The car stays in its lane (but always try to keep in the center lane to have more options), except for the time between changing lanes: The car doesn't spend more than a 3 second length out side the lane lanes during changing lanes, and every other time the car stays inside one of the 3 lanes on the right hand side of the road.
 
-<img src="https://cdn.dribbble.com/users/2374064/screenshots/4732016/car-jump.gif
-" alt="drawing" width="300"/> 
+<img src="writeup_files/higway_4.gif" alt="drawing" width="300"/> 
 
 7. The car is able to change lanes: The car is able to smoothly change lanes when it makes sense to do so, such as when behind a slower moving car and an adjacent lane is clear of other traffic.
 
-<img src="https://cdn.dribbble.com/users/2374064/screenshots/4732016/car-jump.gif
-" alt="drawing" width="300"/> 
+<img src="writeup_files/higway_2.gif" alt="drawing" width="300"/> 
+<img src="writeup_files/higway_3.gif" alt="drawing" width="300"/> 
+<img src="writeup_files/higway_5.gif" alt="drawing" width="300"/> 
+<img src="writeup_files/higway_6.gif" alt="drawing" width="300"/> 
 
 #### Reflection: 
 
-My path planner is built on top of the starter project by udacity. On lines 63 to 69 I did incorporate some constants to easily tweak those parameters. Code is prepared in such way it is easy to redefine number of highway lanes and still run path planner successfully. From lines 75 to 103 I am reading in sensor fusion data from json files if any are returned by SocketIO from the simulator. Lines 112 to 150 are responsible of detecting the behavior of other cars, determine their speed and lateral and longitudinal position on the road. Based on accumulated data planner decides of the safety in performing following moves: going ahead, turning left or right. On lines 153 to 172 planner makes a decision of the next move, based on the previously evaluated safe moves. Possible moves are turning left, right or keeping the speed of the car ahead. On lines 173 to 270 is the part of the code responsible for trajectory generation. The trajectory evaluation takes into account cars coordinates, its speed and lane occupation and previous path points. Previous path points provide trajectory continuity, also increasing trajectory generation efficiency and accuracy. It is no longer needed to reevaluate trajectory from scratch at every iteration. Also to make trajectory evaluation efficient coordinates are transformed to local car coordinates.
+8. My path planner is built on top of the starter project by udacity. 
+
+On lines 115 to 120 I incorporated some constants to easily tweak the parameters for lane changing, path planing, aceleration and desaceleration. 
+
+Code is prepared in such way it is easy to redefine number of highway lanes and still run path planner successfully. From lines 112 to 292 I am reading in sensor fusion data from json files if any are returned by SocketIO from the simulator. Lines 112 to 150 are responsible of detecting the behavior of other cars, determine their speed and lateral and longitudinal position on the road. Based on accumulated data planner decides of the safety in performing following moves: going ahead, turning left or right. On lines 153 to 172 planner makes a decision of the next move, based on the previously evaluated safe moves. Possible moves are turning left, right or keeping the speed of the car ahead. On lines 173 to 270 is the part of the code responsible for trajectory generation. The trajectory evaluation takes into account cars coordinates, its speed and lane occupation and previous path points. Previous path points provide trajectory continuity, also increasing trajectory generation efficiency and accuracy. It is no longer needed to reevaluate trajectory from scratch at every iteration. Also to make trajectory evaluation efficient coordinates are transformed to local car coordinates.
 
 I must say the final code is a bit hard to maintain. I suppose it would be better to transform the code to more OOP paradigm. In further work I will also try to introduce cost functions and some machine learning algorithm to make the cars behavior more realistic.
-
-<img src="https://cdn.dribbble.com/users/2374064/screenshots/4732016/car-jump.gif
-" alt="drawing" width="300"/> 
 
 ## Video Results:
 
