@@ -151,27 +151,13 @@ I must say the final code is a bit hard to maintain. I suppose it would be bette
 ## Video Results:
 
 (CarND-P7-Path_Planning-1.mp4)[PUT LINK HERE]  
-(CarND-P7-Path_Planning-1)[PUT LINK HERE]  
+(CarND-P7-Path_Planning-1)[https://youtu.be/ikr4GRkzsXE]  
 
 (CarND-P7-Path_Planning-2.mp4)[PUT LINK HERE]  
-(CarND-P7-Path_Planning-2)[PUT LINK HERE]  
+(CarND-P7-Path_Planning-2)[https://youtu.be/Jk7YLy1ryW4]  
 
 (CarND-P7-Path_Planning-3.mp4)[PUT LINK HERE]  
-(CarND-P7-Path_Planning-3)[PUT LINK HERE]  
-
-<!-- Videos Description
-
-CarND-P7-Path_Planning-1
-CarND-P7-Path_Planning-2
-CarND-P7-Path_Planning-3
-
-In this project, the goal was to design a path planner that is able to create smooth, safe paths for the car to follow along a 3 lane highway with traffic. The path planner was able to keep inside its lane, avoid hitting other cars, and pass slower moving traffic all by using localization, sensor fusion, and map data. The goal is to safely navigate around a virtual highway with other traffic that is driving +-10 MPH of the 50 MPH speed limit. The car's localization and sensor fusion data are provided, there is also a sparse map list of waypoints around the highway. The car should try to go as close as possible to the 50 MPH speed limit, which means passing slower traffic when possible, note that other cars will try to change lanes too. The car should avoid hitting other cars at all cost as well as driving inside of the marked road lanes at all times, unless going from one lane to another. The car should be able to make one complete loop around the 6946m highway. Since the car is trying to go 50 MPH, it should take a little over 5 minutes to complete 1 loop. Also the car should not experience total acceleration over 10 m/s^2 and jerk that is greater than 10 m/s^3.
-
-Repository:
-https://github.com/JohnBetaCode/CarND-P7-Highway_Driving
-
-Keywords:
-C++, AI, Udacity, Self Driving Car, Sensor Fusion, Highway Driving, Trayectory Generation, Behavior Planning, Prediction, Search, Motion PLanning -->
+(CarND-P7-Path_Planning-3)[https://youtu.be/99lhog591yk]  
 
 ---
 ## Basic Build Instructions

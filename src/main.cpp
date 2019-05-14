@@ -112,9 +112,9 @@ int main() {
           // ----------------------------------------------------------------
           // Hyper parameters
           
-          float SPACE_GAP = 40; // [m] Gap from car to obstacles
-          float DECEL_CONTS = 0.524; // 0.224 is around 5m/s2 which is under 10m/s2 for jerk requirement
-          float ACELE_CONTS = 0.424; // 0.224 is around 5m/s2 which is under 10m/s2 for jerk requirement
+          float SPACE_GAP = 50; // [m] Gap from car to obstacles
+          float DECEL_CONTS = 0.824; // 0.224 is around 5m/s2 which is under 10m/s2 for jerk requirement
+          float ACELE_CONTS = 0.400; // 0.224 is around 5m/s2 which is under 10m/s2 for jerk requirement
           float SPEED_LIMIT = 49.5; // Maximum speed limit
           float LANE_WIDTH = 4.0; // Lane width
           int OUTPUT_POINTS = 50; 
@@ -131,8 +131,12 @@ int main() {
 
           // Variables to check for close objects forward and backward in left center and right lanes
           bool close_obj_cf = false; // Close object forward in the current lane
-          bool close_obj_l = false; // Close object forward in the left lane
-          bool close_obj_r = false; // Close object forward in the right lane
+          bool close_obj_l  = false; // Close object in the left lane
+          bool close_obj_lf = false; // Close object ahead in the left lane
+          bool close_obj_lb = false; // Close object behind in the left lane
+          bool close_obj_r  = false; // Close object in the right lane
+          bool close_obj_rf = false; // Close object ahead in the right lane
+          bool close_obj_rb = false; // Close object behind in the right lane
 
           // If car is in left lane car can't turn to the left
           // Equivalent to an obstacle ahead
@@ -147,8 +151,10 @@ int main() {
 
           // Initialization for obstacles
           float close_obj_ref_vel = 0;
-          float close_obj_cf_s = 1000000;
-          
+          float close_obj_cf_s = SPACE_GAP*2;
+          float close_obj_lb_s = SPACE_GAP*2;
+          float close_obj_rb_s = SPACE_GAP*2;
+
           // Find ref_v to use
           for(int i=0; i<sensor_fusion.size(); i++){
 
@@ -176,9 +182,9 @@ int main() {
               // Check if obstacle car is in the current lane
               if(obj_d < (LANE_WIDTH*.5+LANE_WIDTH*lane+LANE_WIDTH*.5) 
               && obj_d > (LANE_WIDTH*.5+LANE_WIDTH*lane-LANE_WIDTH*.5)){
-                if(obj_s<close_obj_cf_s){
+                if((obj_s-car_s)<close_obj_cf_s){
                     close_obj_cf = true;
-                    close_obj_cf_s = obj_s;
+                    close_obj_cf_s = obj_s-car_s;
                     close_obj_ref_vel = check_speed*2.24; // 2.24 because mph
                 }
               }
@@ -190,59 +196,104 @@ int main() {
                 if(obj_d < (LANE_WIDTH*.5+LANE_WIDTH*(lane+1)+LANE_WIDTH*.5) 
                 && obj_d > (LANE_WIDTH*.5+LANE_WIDTH*(lane+1)-LANE_WIDTH*.5)
                 && lane!=2){
-                  close_obj_r = true;
+                  if(obj_s-car_s>0 && ref_vel>check_speed*2.24){
+                    close_obj_rf = true;
+                  }
+                  else if(abs(obj_s-car_s)<SPACE_GAP*0.5){
+                    if(ref_vel<check_speed*2.24 && abs(obj_s-car_s)>SPACE_GAP*0.1){
+                      close_obj_rb = true;
+                    }
+
+                    if(abs(obj_s-car_s)>SPACE_GAP*0.2 && 
+                      ref_vel>check_speed*2.24){
+                        close_obj_rb = false;
+                    }
+                    
+                  }
                 }
+
                 // Check obstacles to the left
                 else if(obj_d < (LANE_WIDTH*.5+LANE_WIDTH*(lane-1)+LANE_WIDTH*.5) 
                 && obj_d > (LANE_WIDTH*.5+LANE_WIDTH*(lane-1)-LANE_WIDTH*.5)
                 && lane!=0){
-                  close_obj_l = true;
+                  if(obj_s-car_s>0 && ref_vel>check_speed*2.24){
+                    close_obj_lf = true;
+                  }
+                  else if(abs(obj_s-car_s)<SPACE_GAP*0.5){
+                    if(ref_vel<check_speed*2.24 && abs(obj_s-car_s)>SPACE_GAP*0.1){
+                      close_obj_lb = true;
+                    }
+                    if(abs(obj_s-car_s)>SPACE_GAP*0.2 && 
+                      ref_vel>check_speed*2.24){
+                        close_obj_lb = false;
+                    }
+                  }
                 }
+
               }
+            if(close_obj_rb||close_obj_rf){
+              close_obj_r = true;
+            }
+            if(close_obj_lb||close_obj_lf){
+              close_obj_l = true;
+            }
               
             }             
           }
 
-          // Print turning information
-          std::cout<<car_d<<"Left Turn: "<<!close_obj_l<<"| Right Turn: "<<!close_obj_r<< std::endl;
-
           // ----------------------------------------------------------------
           // Acceleration/Deceleration heuristic
+
+          // return to center lane
+          if((lane==0 && !close_obj_r)||(lane==2 && !close_obj_l)){
+            lane = 1;
+          }
 
           // If there's an obstacle ahead
           if(close_obj_cf){
             if(ref_vel > close_obj_ref_vel){
 
-               // slow down gradually to avoid future collision
-              ref_vel -= DECEL_CONTS*(1.-SPACE_GAP/close_obj_cf_s);
-
-              // brake completely immediately to avoid collision
-              if(close_obj_cf_s-car_s<SPACE_GAP*0.1){
-                ref_vel = 0;
+              // slow down gradually to avoid future collision
+              if(close_obj_cf_s>=SPACE_GAP*0.06){
+                ref_vel -= DECEL_CONTS*(1.-close_obj_cf_s/SPACE_GAP);
               }
+
+              // // brake completely immediately to avoid collision
+              // else if(close_obj_cf_s<SPACE_GAP*0.05){
+              //   ref_vel = 0;
+              // }
               // brake sharply immediately for the same speed of the car ahead
-              else if(close_obj_cf_s-car_s<SPACE_GAP*0.3){
+              else if(close_obj_cf_s<SPACE_GAP*0.4){
                 ref_vel = close_obj_ref_vel;
               }
               // slow down even more is object is very close
-              else if(close_obj_cf_s-car_s<SPACE_GAP*0.5){
-                ref_vel -= (DECEL_CONTS*(1.-SPACE_GAP/close_obj_cf_s))*0.6;
+              else if(close_obj_cf_s<SPACE_GAP*0.6){
+                ref_vel -= (DECEL_CONTS*(1.8-close_obj_cf_s/SPACE_GAP));
               }
+
+              // Assert always a positive speed or equal to zero
+              if(ref_vel<=0){
+                ref_vel=0;
+              }
+
             }
 
             // Change lane heuristic
-            if(!close_obj_l){
-              lane -= 1;
-            }
-            else if(!close_obj_r){
+            if(!close_obj_r){
               lane += 1;
             }
-
+            else if(!close_obj_l){
+              lane -= 1;
+            }
           }
           // If there's an obstacle ahead
           else if(ref_vel < SPEED_LIMIT){
             ref_vel += ACELE_CONTS;
           }
+          
+          // Print turning information
+          std::cout<<"|car_d: "<< car_d<<"| L_Turn: "<<!close_obj_l<<"| R_Turn: "<<!close_obj_r<<"| C_Obs: "<<close_obj_cf
+            <<"| C_Obs_s: "<<close_obj_cf_s<<"| Lane: "<<lane<<"| Ref_vel: "<<ref_vel<< std::endl;
 
           // ----------------------------------------------------------------
           // Create a list of widely spaced (x, y) waypoints, evenly spaced at 30m
@@ -326,7 +377,7 @@ int main() {
           }
 
           // Calculate how to break up spline points so that we travel at our desired reference velocity
-          double target_x = 30.0;
+          double target_x = 25.0;
           double target_y = s(target_x);
           double target_dist = sqrt((target_x)*(target_x)+(target_y)*(target_y));
 
