@@ -133,9 +133,7 @@ For safety, a lane change path should optimize the distance away from other traf
 
 #### Reflection: 
 
-8. My path planner is built on top of the starter project by udacity. 
-
-On lines 115 to 120 I incorporated some constants to easily tweak the parameters for lane changing, path planing, aceleration and desaceleration. 
+8. My path planner is built on the top of the starter project by udacity.On lines 115 to 120 I incorporated some hyperparamters to easily tweak the parameters for lane changing, path planing, aceleration and desaceleration. 
 
 Code is prepared in such way it is easy to redefine number of highway lanes and still run path planner successfully. From lines 112 to 292 I am reading in sensor fusion data from json files if any are returned by SocketIO from the simulator. Lines 112 to 150 are responsible of detecting the behavior of other cars, determine their speed and lateral and longitudinal position on the road. Based on accumulated data planner decides of the safety in performing following moves: going ahead, turning left or right. On lines 153 to 172 planner makes a decision of the next move, based on the previously evaluated safe moves. Possible moves are turning left, right or keeping the speed of the car ahead. On lines 173 to 270 is the part of the code responsible for trajectory generation. The trajectory evaluation takes into account cars coordinates, its speed and lane occupation and previous path points. Previous path points provide trajectory continuity, also increasing trajectory generation efficiency and accuracy. It is no longer needed to reevaluate trajectory from scratch at every iteration. Also to make trajectory evaluation efficient coordinates are transformed to local car coordinates.
 
