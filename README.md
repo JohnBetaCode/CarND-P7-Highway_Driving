@@ -150,14 +150,14 @@ I must say the final code is a bit hard to maintain. I suppose it would be bette
 
 ## Video Results:
 
-(CarND-P7-Path_Planning-1.mp4)[PUT LINK HERE]  
-(CarND-P7-Path_Planning-1)[https://youtu.be/ikr4GRkzsXE]  
+[CarND-P7-Path_Planning-1.mp4](https://github.com/JohnBetaCode/CarND-P7-Highway_Driving/tree/master/video_results/test_1.mp4)   
+[CarND-P7-Path_Planning-1](https://youtu.be/ikr4GRkzsXE)  
 
-(CarND-P7-Path_Planning-2.mp4)[PUT LINK HERE]  
-(CarND-P7-Path_Planning-2)[https://youtu.be/Jk7YLy1ryW4]  
+[CarND-P7-Path_Planning-2.mp4](https://github.com/JohnBetaCode/CarND-P7-Highway_Driving/tree/master/video_results/test_2.mp4)  
+[CarND-P7-Path_Planning-2](https://youtu.be/Jk7YLy1ryW4)   
 
-(CarND-P7-Path_Planning-3.mp4)[PUT LINK HERE]  
-(CarND-P7-Path_Planning-3)[https://youtu.be/99lhog591yk]  
+[CarND-P7-Path_Planning-3.mp4](https://github.com/JohnBetaCode/CarND-P7-Highway_Driving/tree/master/video_results/test_3.mp4)  
+[CarND-P7-Path_Planning-3](https://youtu.be/99lhog591yk)  
 
 ---
 ## Basic Build Instructions
