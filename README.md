@@ -112,6 +112,8 @@ For safety, a lane change path should optimize the distance away from other traf
 
 3. The car drives according to the speed limit: The car doesn't drive faster than the speed limit. Also the car isn't driving much slower than speed limit unless obstructed by traffic.
  
+<img src="writeup_files/higway_3.gif" alt="drawing" width="300"/> 
+
 4. Max Acceleration and Jerk are not Exceeded: The car does not exceed a total acceleration of 10 m/s^2 and a jerk of 10 m/s^3.
 
 <img src="writeup_files/higway_1.gif" alt="drawing" width="300"/> 
@@ -126,18 +128,15 @@ For safety, a lane change path should optimize the distance away from other traf
 
 7. The car is able to change lanes: The car is able to smoothly change lanes when it makes sense to do so, such as when behind a slower moving car and an adjacent lane is clear of other traffic.
 
-<img src="writeup_files/higway_2.gif" alt="drawing" width="300"/> 
-<img src="writeup_files/higway_3.gif" alt="drawing" width="300"/> 
-<img src="writeup_files/higway_5.gif" alt="drawing" width="300"/> 
-<img src="writeup_files/higway_6.gif" alt="drawing" width="300"/> 
+<img src="writeup_files/higway_2.gif" alt="drawing" width="300"/>  
+<img src="writeup_files/higway_5.gif" alt="drawing" width="300"/>  
+<img src="writeup_files/higway_6.gif" alt="drawing" width="300"/>  
 
 #### Reflection: 
 
-8. My path planner is built on the top of the starter project by udacity.On lines 115 to 120 I incorporated some hyperparamters to easily tweak the parameters for lane changing, path planing, aceleration and desaceleration. 
+8. My path planner is built on the top of the starter project by udacity.From lines 115 to 120 I incorporated some hyperparamters to easily tweak processes for lane changing, path planing, aceleration and desaceleration. Code is prepared in such way it is easy to redefine number of highway lanes and still run path planner successfully. From lines 90 to 110 I am reading in sensor fusion data from json files if any are returned by SocketIO from the simulator. Lines 124 to 242 are responsible of detecting the behavior of other cars, determine their speed and lateral and longitudinal position on the road. Based on accumulated data planner decides of the safety in performing following moves: going ahead, turning left or right. On lines 245 to 296 planner makes a decision of the next move, based on the previously evaluated safe moves. Possible moves are turning left, right or keeping the speed of the car ahead. On lines 299 to 409 is the part of the code responsible for trajectory generation. The trajectory evaluation takes into account the car's coordinate, its speed and lane occupation and previous path points. Previous path points provide trajectory continuity, also increasing trajectory generation efficiency and accuracy. It is no longer needed to reevaluate trajectory from scratch at every iteration. Also to make trajectory evaluation efficient coordinates are transformed to local car coordinates.
 
-Code is prepared in such way it is easy to redefine number of highway lanes and still run path planner successfully. From lines 112 to 292 I am reading in sensor fusion data from json files if any are returned by SocketIO from the simulator. Lines 112 to 150 are responsible of detecting the behavior of other cars, determine their speed and lateral and longitudinal position on the road. Based on accumulated data planner decides of the safety in performing following moves: going ahead, turning left or right. On lines 153 to 172 planner makes a decision of the next move, based on the previously evaluated safe moves. Possible moves are turning left, right or keeping the speed of the car ahead. On lines 173 to 270 is the part of the code responsible for trajectory generation. The trajectory evaluation takes into account cars coordinates, its speed and lane occupation and previous path points. Previous path points provide trajectory continuity, also increasing trajectory generation efficiency and accuracy. It is no longer needed to reevaluate trajectory from scratch at every iteration. Also to make trajectory evaluation efficient coordinates are transformed to local car coordinates.
-
-I must say the final code is a bit hard to maintain. I suppose it would be better to transform the code to more OOP paradigm. In further work I will also try to introduce cost functions and some machine learning algorithm to make the cars behavior more realistic.
+I must say the final code is a bit hard to maintain due to the code lacks of cost functions and some machine learning algorithm to make the cars behavior more realistic.
 
 ## Video Results:
 
